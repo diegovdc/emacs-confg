@@ -81,3 +81,20 @@
      (define-key clojure-mode-map (kbd "C-M-r") 'cider-refresh)
      (define-key clojure-mode-map (kbd "C-c u") 'cider-user-ns)
      (define-key cider-mode-map (kbd "C-c u") 'cider-user-ns)))
+
+
+(dolist (mode '(clojure-mode clojurescript-mode cider-mode))
+  (eval-after-load mode
+    (font-lock-add-keywords
+     mode '(("(\\(fn\\)[\[[:space:]]"  ; anon funcs 1
+             (0 (progn (compose-region (match-beginning 1)
+                                       (match-end 1) "λ")
+                       nil)))
+            ("\\(#\\)("                ; anon funcs 2
+             (0 (progn (compose-region (match-beginning 1)
+                                       (match-end 1) "ƒ")
+                       nil)))
+            ("\\(#\\){"                 ; sets
+             (0 (progn (compose-region (match-beginning 1)
+                                       (match-end 1) "∈")
+                       nil)))))))
