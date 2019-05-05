@@ -67,3 +67,82 @@
     (quit nil)))
 
 (setq electric-indent-mode nil)
+
+
+;; autocompletion
+(add-hook 'cider-repl-mode-hook #'company-mode)
+(add-hook 'cider-mode-hook #'company-mode)
+
+;;(setq company-idle-delay nil) ; never start completions automatically
+;;(global-set-key (kbd "M-TAB") #'company-complete) ; use M-TAB, a.k.a. C-M-i, as manual trigger
+
+(add-hook 'cider-repl-mode-hook #'cider-company-enable-fuzzy-completion)
+(add-hook 'cider-mode-hook #'cider-company-enable-fuzzy-completion)
+
+
+;; projectile
+; manual https://docs.projectile.mx/en/latest/
+(projectile-mode +1)
+(define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+
+;; switch buffer
+(global-set-key (kbd "s-b") 'ido-switch-buffer)
+
+
+;; duplicate line o region
+
+(defun duplicate-line-or-region (&optional n)
+  "Duplicate current line, or region if active.
+With argument N, make N copies.
+With negative N, comment out original line and use the absolute value."
+  (interactive "*p")
+  (let ((use-region (use-region-p)))
+    (save-excursion
+      (let ((text (if use-region        ;Get region if active, otherwise line
+                      (buffer-substring (region-beginning) (region-end))
+                    (prog1 (thing-at-point 'line)
+                      (end-of-line)
+                      (if (< 0 (forward-line 1)) ;Go to beginning of next line, or make a new one
+                          (newline))))))
+        (dotimes (i (abs (or n 1)))     ;Insert N times, or once if not specified
+          (insert text))))
+    (if use-region nil                  ;Only if we're working with a line (not a region)
+      (let ((pos (- (point) (line-beginning-position)))) ;Save column
+        (if (> 0 n)                             ;Comment out original with negative arg
+            (comment-region (line-beginning-position) (line-end-position)))
+        (forward-line 1)
+        (forward-char pos)))))
+
+(global-set-key [?\C-c ?d] 'duplicate-line-or-region)
+
+
+;; select word
+(defun select-word ()
+"Select a word under cursor.
+“word” here is considered any alphenumeric sequence with “_” or “-”."
+ (interactive)
+ (let (b1 b2)
+   (skip-chars-backward "-_A-Za-z0-9")
+   (setq b1 (point))
+   (skip-chars-forward "-_A-Za-z0-9")
+   (setq b2 (point))
+   (set-mark b1)
+   )
+ )
+
+(global-set-key (kbd "M-8") 'select-word)
+
+;; comment line or region
+;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Comment-Commands.html
+
+;; move-text
+(global-set-key (kbd "C-s-<up>") 'move-text-up)
+(global-set-key (kbd "C-s-<down>") 'move-text-down)
+
+
+;; cider
+(setq cider-auto-select-error-buffer nil) ; do not autoselect error buffer
+
+(global-set-key (kbd "s-<return>")  'cider-eval-defun-at-point) ; evaluate supercollider style
+
