@@ -141,8 +141,4 @@ With negative N, comment out original line and use the absolute value."
 (global-set-key (kbd "C-s-<down>") 'move-text-down)
 
 
-;; cider
-(setq cider-auto-select-error-buffer nil) ; do not autoselect error buffer
-
-(global-set-key (kbd "s-<return>")  'cider-eval-defun-at-point) ; evaluate supercollider style
 

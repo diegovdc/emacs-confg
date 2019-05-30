@@ -9,6 +9,13 @@
 ;; Java classes (e.g. JavaClassName)
 (add-hook 'clojure-mode-hook 'subword-mode)
 
+;; Eval buffer on save
+(add-hook 'cider-mode-hook
+   '(lambda () (add-hook 'after-save-hook
+    '(lambda ()
+       (if (and (boundp 'cider-mode) cider-mode)
+           (cider-eval-file (buffer-file-name)))))))
+
 ;; A little more syntax highlighting
 (require 'clojure-mode-extra-font-locking)
 
@@ -38,7 +45,7 @@
 
 ;; When there's a cider error, show its buffer and switch to it
 (setq cider-show-error-buffer t)
-(setq cider-auto-select-error-buffer t)
+(setq cider-auto-select-error-buffer nil)
 
 ;; Where to store the cider history.
 (setq cider-repl-history-file "~/.emacs.d/cider-history")
@@ -54,6 +61,7 @@
 (add-to-list 'auto-mode-alist '("\\.boot$" . clojure-mode))
 (add-to-list 'auto-mode-alist '("\\.cljs.*$" . clojurescript-mode))
 (add-to-list 'auto-mode-alist '("lein-env" . enh-ruby-mode))
+
 
 
 ;; key bindings
@@ -77,6 +85,7 @@
 
 (eval-after-load 'cider
   '(progn
+     (define-key clojure-mode-map (kbd "s-<return>")  'cider-eval-defun-at-point) 
      (define-key clojure-mode-map (kbd "C-c C-v") 'cider-start-http-server)
      (define-key clojure-mode-map (kbd "C-M-r") 'cider-refresh)
      (define-key clojure-mode-map (kbd "C-c u") 'cider-user-ns)
