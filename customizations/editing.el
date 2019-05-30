@@ -141,4 +141,48 @@ With negative N, comment out original line and use the absolute value."
 (global-set-key (kbd "C-s-<down>") 'move-text-down)
 
 
+;; save always
+(defun save-buffer-always ()
+  "Save the buffer even if it is not modified."
+  (interactive)
+  (set-buffer-modified-p t)
+  (save-buffer))
+
+(global-set-key (kbd "s-s") 'save-buffer-always)
+
+
+;; yafolding
+(require 'yafolding)
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; undo tree mode                                                         ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'undo-tree)
+;; https://github.com/emacsmirror/undo-tree/blob/master/undo-tree.el#L3092
+;;turn on everywhere
+(global-undo-tree-mode 1)
+;; make ctrl-z undo
+(global-set-key (kbd "s-z") 'undo)
+;; make ctrl-Z redo
+(defalias 'redo 'undo-tree-redo)
+(global-set-key (kbd "s-S-z") 'undo)
+
+
+
+;; delete-region
+(global-set-key (kbd "s-<backspace>") 'delete-region)
+
+;; delete-line
+(defun delete-line ()
+  "Deletes a complete line no matter where this command is called"
+  (interactive)
+  (move-beginning-of-line 1)
+  (kill-line)
+  (paredit-backward-delete)
+  (move-beginning-of-line 1))
+
+(global-set-key (kbd "C-c C-k") 'delete-line)
+
 
