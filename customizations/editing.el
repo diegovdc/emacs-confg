@@ -164,10 +164,10 @@ With negative N, comment out original line and use the absolute value."
 ;;turn on everywhere
 (global-undo-tree-mode 1)
 ;; make ctrl-z undo
-(global-set-key (kbd "s-z") 'undo)
-;; make ctrl-Z redo
+(global-set-key (kbd "C-z") 'undo)
+;; make ctrl-shift-Z redo
 (defalias 'redo 'undo-tree-redo)
-(global-set-key (kbd "s-S-z") 'undo)
+(global-set-key (kbd "M-z") 'redo)
 
 
 
@@ -185,4 +185,27 @@ With negative N, comment out original line and use the absolute value."
 
 (global-set-key (kbd "C-c C-k") 'delete-line)
 
+
+;; revert-all-buffers
+(defun revert-all-buffers ()
+  "Refresh all open buffers from their respective files."
+  (interactive)
+  (let* ((list (buffer-list))
+         (buffer (car list)))
+    (while buffer
+      (let ((filename (buffer-file-name buffer)))
+        ;; Revert only buffers containing files, which are not modified;
+        ;; do not try to revert non-file buffers like *Messages*.
+        (when filename
+          (if (file-exists-p filename)
+              ;; If the file exists, revert the buffer.
+              (with-demoted-errors "Error: %S"
+                (with-current-buffer buffer
+                  (revert-buffer :ignore-auto :noconfirm)))
+            ;; If the file doesn't exist, kill the buffer.
+            (let (kill-buffer-query-functions) ; No query done when killing buffer
+              (kill-buffer buffer)
+              (message "Killed non-existing file buffer: %s" buffer))))
+        (setq buffer (pop list)))))
+  (message "Finished reverting non-file buffers."))
 

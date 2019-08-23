@@ -33,6 +33,19 @@
             (define-clojure-indent (facts 1))
             (rainbow-delimiters-mode)))
 
+
+;; use C-c to eval inside comment
+(setq clojure-toplevel-inside-comment-form t)
+
+(defun cider-clear-repl-buffer* ()
+  (interactive)
+  (cider-switch-to-repl-buffer)
+  (cider-repl-clear-buffer)
+  (insert ";; cleared buffer")
+  (cider-repl-return)
+  (cider-switch-to-last-clojure-buffer))
+
+
 ;;;;
 ;; Cider
 ;;;;
@@ -89,6 +102,7 @@
      (define-key clojure-mode-map (kbd "C-c C-v") 'cider-start-http-server)
      (define-key clojure-mode-map (kbd "C-M-r") 'cider-refresh)
      (define-key clojure-mode-map (kbd "C-c u") 'cider-user-ns)
+     (define-key clojure-mode-map (kbd "C-c C-r") 'cider-clear-repl-buffer*)
      (define-key cider-mode-map (kbd "C-c u") 'cider-user-ns)))
 
 
