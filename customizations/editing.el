@@ -209,3 +209,6 @@ With negative N, comment out original line and use the absolute value."
         (setq buffer (pop list)))))
   (message "Finished reverting non-file buffers."))
 
+
+;; use alt chars using keyboard
+(setq ns-right-alternate-modifier nil)
